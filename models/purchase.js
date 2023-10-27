@@ -3,26 +3,20 @@ const Schema = mongoose.Schema;
 
 const purchaseSchema = new Schema({
   userId: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-  cart: {
-    products: [
-      {
-        item: {
-          itemId: {
-            type: Schema.Types.ObjectId,
-            ref: "Product",
-          },
-          quantity: {
-            type: Number,
-          },
-        },
+  products: [
+    {
+      itemId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+        required: true,
       },
-    ],
-    required: true,
-  },
+      quantity: Number
+    },
+  ],
 });
 
 const Purchase = mongoose.model("Purchase", purchaseSchema);
