@@ -7,7 +7,7 @@ PurchasesController.allPurchases = async (req, res) => {
 
     try {
 
-        let purchase = await Purchase.find({})
+        let purchase = await Purchase.find({},{'products._id' : 0})
                             .lean()
                             .populate('userId', 
                                       {_id: 0, name: 1, surname: 1, email: 1}
