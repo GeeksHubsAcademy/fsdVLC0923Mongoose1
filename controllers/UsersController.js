@@ -1,6 +1,64 @@
 const User = require("../models/user");
+const bcrypt = require('bcrypt');
+const jsonwebtoken = require('jsonwebtoken');
 
 const UsersController = {};
+
+UsersController.loginUser = async (req, res) => {
+
+  if((!req.body.email || !req.body.password) || ((req.body.email === "") || (req.body.password === ""))){
+    res.send({ 
+      success: true,
+      message: "Credenciales incorrectas"
+    })
+  }
+
+  try {
+    let userFound = await User.find({
+      email: req.body.email,
+    });
+
+    if (userFound) {
+      if (userFound[0].email === undefined) {
+        //No hemos encontrado al usuario...mandamos un mensaje
+        res.send({ 
+          success: true,
+          message: "Credenciales incorrectas"
+        })
+      } else {
+        //Hemos encontrado al usuario, vamos a ver si el pass es correcto
+
+        if (bcrypt.compareSync(req.body.password, userFound[0].password)) {
+          //En caso de que hayamos verificado que el password si es correcto, generamos un token
+          let token = jsonwebtoken.sign(
+            { usuario: userFound },
+            process.env.AUTH_SECRET,
+            {
+              expiresIn: "24h",
+            }
+          );
+
+          res.send({ 
+            success: true,
+            message: `Bienvenid@ ${userFound[0].name}`,
+            token: token
+          })
+        } else {
+          res.send({ 
+            success: true,
+            message: "Credenciales incorrectas"
+          })
+        }
+      }
+    }
+  } catch (error) {
+    res.send({ 
+      success: false,
+      message: "Credenciales incorrectas",
+      error: error
+    })
+  }
+};
 
 UsersController.allUsers = async (req, res) => {
   try {
@@ -21,7 +79,7 @@ UsersController.allUsers = async (req, res) => {
 };
 
 UsersController.newUser = async (req, res) => {
-  // let password = bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.ROUNDS));
+  let password = bcrypt.hashSync(req.body.password, Number.parseInt(10));
 
   try {
     let user = await User.create({
@@ -29,7 +87,7 @@ UsersController.newUser = async (req, res) => {
       surname: req.body.surname,
       dni: req.body.dni,
       email: req.body.email,
-      password: req.body.password,
+      password: password,
       phone: req.body.phone,
     });
 
@@ -57,7 +115,9 @@ UsersController.modifyUser = async (req, res) => {
     //con setOptions en este caso voy a exigir que me devuelva el documento modificado
 
     if (updated) {
-      res.send(`Usuario ${updated.name} ${updated.surname} actualizado con éxito a ${name}`);
+      res.send(
+        `Usuario ${updated.name} ${updated.surname} actualizado con éxito a ${name}`
+      );
     }
   } catch (error) {
     res.json({

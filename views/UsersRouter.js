@@ -9,6 +9,7 @@ const UsersController = require('../controllers/UsersController');
 
 router.get("/", UsersController.allUsers);
 router.post("/", UsersController.newUser);
+router.post("/login", UsersController.loginUser);
 router.put("/", UsersController.modifyUser);
 router.delete("/", UsersController.deleteUser);
 
