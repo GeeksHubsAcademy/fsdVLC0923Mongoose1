@@ -8,8 +8,13 @@ PurchasesController.allPurchases = async (req, res) => {
     try {
 
         let purchase = await Purchase.find({})
-                            .populate('userId')
-                            .populate('products.itemId');
+                            .lean()
+                            .populate('userId', 
+                                      {_id: 0, name: 1, surname: 1, email: 1}
+                                      )
+                            .populate('products.itemId', 
+                                      {_id: 0, name: 1, description: 1, precio: 1}
+                                      );
 
         if (purchase.length > 0) {
             res.send(purchase)
