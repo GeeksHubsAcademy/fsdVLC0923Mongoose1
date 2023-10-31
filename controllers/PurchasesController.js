@@ -3,6 +3,31 @@ const Purchase = require('../models/purchase');
 
 const PurchasesController = {};
 
+PurchasesController.allPurchases = async (req, res) => {
+
+    try {
+
+        let purchase = await Purchase.find({})
+                            .populate('userId')
+                            .populate('products.itemId');
+
+        if (purchase.length > 0) {
+            res.send(purchase)
+        } else {
+            res.send({ "Message": "Lo sentimos, no hemos encontrado ninguna compra." })
+        }
+
+    } catch (error) {
+        res.json({ 
+            success: false,
+            message: "Ha habido un error en la búsqueda de las compras",
+            error: error
+        })
+    }
+
+}
+
+
 PurchasesController.newPurchase = async (req, res) => {
 
     try {

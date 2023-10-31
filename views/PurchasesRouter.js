@@ -7,7 +7,7 @@ const router = express.Router();
 
 const PurchasesController = require('../controllers/PurchasesController');
 
-
+router.get("/", PurchasesController.allPurchases);
 router.post("/", PurchasesController.newPurchase);
 
 
