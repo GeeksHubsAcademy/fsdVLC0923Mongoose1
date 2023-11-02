@@ -8,7 +8,9 @@ const router = express.Router();
 const ProductsController = require('../controllers/ProductsController');
 
 
+router.get("/", ProductsController.getOneProduct);
 router.post("/", ProductsController.newProduct);
+router.delete("/", ProductsController.deleteProduct);
 
 
 
